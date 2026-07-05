@@ -6,7 +6,7 @@ client=Groq(
 def ask_llm(prompt: str):
     response= client.chat.completions.create(
         model="llama-3.1-8b-instant",
-        meaasges=[
+        messages=[
             {
                 "role": "user",
                 "content": prompt
