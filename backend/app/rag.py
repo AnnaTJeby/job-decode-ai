@@ -4,7 +4,7 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 embeddings=HuggingFaceEmbeddings(
     model_name="all-MiniLM-l6-v2",
 )
-vectorstore=None
+vectorstore = None
 def add_document(text: str):
     global vectorstore
     splitter=RecursiveCharacterTextSplitter(
@@ -13,8 +13,9 @@ def add_document(text: str):
     )  
     docs=splitter.create_documents([text])
     vectorstore=FAISS.from_documents(docs, embeddings)
-def retrieve_documents(query: str):
+def retrieve_documents(query: str, k: int = 4):
+    global vectorstore
     if vectorstore is None:
-        return []
-    return vectorstore.similarity_search(query, k=3)
-    
+        raise ValueError("Vectorstore is not initialized. Please add documents first.")
+    docs=vectorstore.similarity_search(query, k=k)
+    return docs

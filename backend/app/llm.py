@@ -5,27 +5,13 @@ client=Groq(
     api_key=GROQ_API_KEY
 )
 def ask_llm(prompt: str):
-    docs=retrieve_documents(prompt)
-    context = "\n\n".join(
-    doc.page_content for doc in docs
-    )
-    full_prompt = f"""
-Use the following context to answer the question.
-
-Context:
-{context}
-
-Question:
-{prompt}
-
-Answer:
-"""
-    response= client.chat.completions.create(
+    response = client.chat.completions.create(
         model="llama-3.1-8b-instant",
+        temperature=0,
         messages=[
             {
                 "role": "user",
-                "content": full_prompt
+                "content": prompt
             }
         ]
     )
