@@ -8,6 +8,8 @@ st.set_page_config(
     page_icon="🚀",
     layout="wide"
 )
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 if "jd_uploaded" not in st.session_state:
     st.session_state.jd_uploaded = False
 
@@ -48,8 +50,8 @@ This application compares your resume with a Job Description using:
 - 📊 ATS Matching
 """)
 
-tab1, tab2, tab3 = st.tabs(
-    ["📄 Job Description", "📄 Resume", "📊 Analysis"]
+tab1, tab2, tab3, tab4 = st.tabs(
+    ["📄 Job Description", "📄 Resume", "📊 Analysis", "💬 Chat"]
 )
 
 # ---------------- JD UPLOAD ----------------
@@ -75,14 +77,20 @@ with tab1:
                         json={"text": jd_text}
                     )
 
-                if res.status_code == 200:
-                    st.success(f"✅ {res.json()['message']}")
-                    st.session_state.jd_uploaded = True
+                data = res.json()
+
+                if "message" in data:
+                    st.success(f"✅ {data['message']}")
+
+                elif "error" in data:
+                    st.error(data["error"])
+
                 else:
-                    st.error("Failed to upload Job Description.")
+                    st.error("Unexpected response from server.")
 
             else:
                 st.error("Please enter a Job Description.")
+                
 
     else:
 
@@ -183,3 +191,52 @@ with tab3:
 
         else:
             st.error("Failed to analyze resume.")
+# ---------------- CHAT ----------------
+with tab4:
+
+    st.subheader("💬 Ask Questions About the Job Description")
+
+    user_question = st.text_input(
+        "Ask a question",
+        placeholder="Example: What skills are required?"
+    )
+
+    if st.button("Send"):
+
+        if user_question.strip():
+
+            with st.spinner("Thinking..."):
+
+                res = requests.post(
+                    f"{BASE_URL}/chat",
+                    json={
+                        "prompt": user_question
+                    }
+                )
+
+            if res.status_code == 200:
+
+                answer = res.json()["answer"]
+
+                st.session_state.messages.append(
+                    ("You", user_question)
+                )
+
+                st.session_state.messages.append(
+                    ("AI", answer)
+                )
+
+            else:
+                st.error("Unable to get a response.")
+
+        else:
+            st.warning("Please enter a question.")
+
+    st.divider()
+
+    for sender, message in st.session_state.messages:
+
+        if sender == "You":
+            st.chat_message("user").write(message)
+        else:
+            st.chat_message("assistant").write(message)

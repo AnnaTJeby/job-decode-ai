@@ -25,9 +25,18 @@ def hello():
     }
 @app.post("/ingest")
 def ingest_document(request: DocumentRequest):
-    add_document(request.text)
+
+    text = request.text.strip()
+
+    if len(text) < 200:
+        return {
+            "error": "Please provide a complete Job Description (minimum 200 characters)."
+        }
+
+    add_document(text)
+
     return {
-        "message": "Document added successfully."
+        "message": "Job Description uploaded successfully."
     }
 @app.post("/upload-job-description")
 def upload_job_description(file: UploadFile = File(...)):
@@ -57,7 +66,31 @@ def upload_resume(file: UploadFile = File(...)):
     }
 @app.post("/chat")
 def chat(request: ChatRequest):
-    answer=ask_llm(request.prompt)
+
+    docs = retrieve_documents(request.prompt)
+
+    context = "\n\n".join(
+        [doc.page_content for doc in docs]
+    )
+
+    prompt = f"""
+You are an AI assistant that answers questions ONLY using the uploaded Job Description.
+
+If the answer is not available in the Job Description, say:
+
+"I couldn't find that information in the uploaded Job Description."
+
+Job Description:
+{context}
+
+Question:
+{request.prompt}
+
+Answer:
+"""
+
+    answer = ask_llm(prompt)
+
     return {
         "answer": answer
     }
