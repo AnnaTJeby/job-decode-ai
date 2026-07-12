@@ -1,9 +1,15 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
-embeddings=HuggingFaceEmbeddings(
-    model_name="all-MiniLM-l6-v2",
-)
+embeddings = None
+
+def get_embeddings():
+    global embeddings
+    if embeddings is None:
+        embeddings = HuggingFaceEmbeddings(
+            model_name="all-MiniLM-L6-v2"
+        )
+    return embeddings
 vectorstore = None
 def add_document(text: str):
     global vectorstore
