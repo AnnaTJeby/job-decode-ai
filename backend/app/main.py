@@ -3,7 +3,7 @@ from fastapi import UploadFile, File, FastAPI
 from pydantic import BaseModel
 from backend.app.rag import retrieve_documents
 import io
-import backend.app.storage
+from backend.app import storage
 from pypdf import PdfReader
 from backend.app.llm import ask_llm
 app=FastAPI()
