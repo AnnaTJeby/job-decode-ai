@@ -81,6 +81,7 @@ with tab1:
 
                 if "message" in data:
                     st.success(f"✅ {data['message']}")
+                    st.session_state.jd_uploaded = True
 
                 elif "error" in data:
                     st.error(data["error"])
