@@ -3,9 +3,9 @@ from fastapi import UploadFile, File, FastAPI
 from pydantic import BaseModel
 from backend.app.rag import retrieve_documents
 import io
-import storage
+import backend.app.storage
 from pypdf import PdfReader
-from llm import ask_llm
+from backend.app.llm import ask_llm
 app=FastAPI()
 
 class ChatRequest(BaseModel):
