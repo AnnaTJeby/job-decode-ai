@@ -1,6 +1,6 @@
 from groq import Groq
-from rag import retrieve_documents
-from config import GROQ_API_KEY
+from backend.app.rag import retrieve_documents
+from backend.app.config import GROQ_API_KEY
 client=Groq(
     api_key=GROQ_API_KEY
 )

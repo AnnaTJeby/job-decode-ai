@@ -1,7 +1,7 @@
-from rag import add_document
+from backend.app.rag import add_document
 from fastapi import UploadFile, File, FastAPI
 from pydantic import BaseModel
-from rag import retrieve_documents
+from backend.app.rag import retrieve_documents
 import io
 import storage
 from pypdf import PdfReader
